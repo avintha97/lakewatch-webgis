@@ -1,28 +1,10 @@
-# Python
-server/venv/
-server/__pycache__/
-server/*.pyc
+# Python virtual env
+venv/
 
-# Node / React (for future client app)
-client/node_modules/
-client/.vite/
-client/.next/
-client/dist/
+# Python cache
+__pycache__/
+*.pyc
 
 # Environment files
+.env
 *.env
-**/*.env
-
-# System files
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-
-# IDE files
-.vscode/
-.idea/
-
-# Earth Engine credentials cache
-.ee_token
