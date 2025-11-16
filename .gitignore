@@ -11,3 +11,6 @@ __pycache__/
 
 #co-pilotfiles
 .github/
+
+#client
+client/node_modules
