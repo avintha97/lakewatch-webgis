@@ -7,6 +7,8 @@ colorama==0.4.6
 earthengine-api==1.7.0
 ee==0.2
 Flask==3.1.2
+flask-cors==4.0.0
+geoalchemy2==0.14.1
 google-api-core==2.28.1
 google-api-python-client==2.187.0
 google-auth==2.43.0
@@ -23,13 +25,16 @@ Jinja2==3.1.6
 MarkupSafe==3.0.3
 proto-plus==1.26.1
 protobuf==6.33.1
+psycopg2-binary==2.9.9
 pyasn1==0.6.1
 pyasn1_modules==0.4.2
 pyparsing==3.2.5
 python-dotenv==1.2.1
 requests==2.32.5
 rsa==4.9.1
+shapely==2.0.2
 six==1.17.0
+sqlalchemy==2.0.23
 uritemplate==4.2.0
 urllib3==2.5.0
 Werkzeug==3.1.3
