@@ -8,6 +8,7 @@ import sys
 if sys.platform == 'win32':
     import types
     fcntl_mock = types.ModuleType('fcntl')
+    fcntl_mock.ioctl = lambda *args, **kwargs: None  # dummy ioctl function
     sys.modules['fcntl'] = fcntl_mock
 
 import ee
