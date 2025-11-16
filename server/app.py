@@ -1,6 +1,7 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify,request
 import os
 from dotenv import load_dotenv
+
 
 # Workaround for Windows: blessings module uses fcntl (Unix-only)
 # Monkey-patch fcntl before importing ee
@@ -13,7 +14,8 @@ if sys.platform == 'win32':
 
 import ee
 
-from ee_area import count_landsat_images_by_year
+# from ee_area import count_landsat_images_by_year
+from ee_area import calculate_water_area_sentinel1
 
 
 # -------------------------------------------------
@@ -69,31 +71,46 @@ def health_check():
     """
     return jsonify({"status": "ok", "message": "Flask server is running"}), 200
 
-@app.route("/api/v1/lakes/image-count/<int:year>", methods=["GET"])
-def get_image_count_by_year(year):
+@app.route("/api/v1/lakes/area", methods=["POST"])
+def get_lakes_area():
     """
-    Get image count for Senanayaka Samudraya for a given year.
+    POST /api/v1/lakes/area
     
-    URL: GET /api/v1/lakes/image-count/2025
+    Calculate water area using Sentinel-1 SAR for a given geometry and date.
+    
+    Request body JSON:
+    {
+        "bbox": [[lon, lat], [lon, lat], [lon, lat], [lon, lat], [lon, lat]],
+        "date": "2025-01-27",
+        "vv_vh_threshold": -17
+    }
+    
+    Response:
+    {
+        "target_date": "2025-01-27",
+        "start_date": "2025-01-22",
+        "end_date": "2025-02-01",
+        "water_area_km2": 45.1234,
+        "pixel_count": 451234,
+        "vv_vh_threshold_db": -17,
+        "satellite": "Sentinel-1"
+    }
     """
-    bbox_coords = [
-        [81.39865413309057, 7.099820828875569],
-        [81.55658259988745, 7.099820828875569],
-        [81.55658259988745, 7.281713154976799],
-        [81.39865413309057, 7.281713154976799],
-        [81.39865413309057, 7.099820828875569],
-    ]
-    
     try:
-        result = count_landsat_images_by_year(bbox_coords, year)
+        data = request.get_json()
+        bbox = data.get("bbox")
+        date = data.get("date")
+        vv_vh_threshold = data.get("vv_vh_threshold", -17)
         
-        return jsonify({
-            "lake_name": "Senanayaka Samudraya",
-            "year": result["year"],
-            "image_count": result["image_count"],
-            "start_date": result["start_date"],
-            "end_date": result["end_date"]
-        }), 200
+        if not bbox or not date:
+            return jsonify({
+                "status": "error",
+                "message": "Missing 'bbox' or 'date' in request body"
+            }), 400
+        
+        result = calculate_water_area_sentinel1(bbox, date, vv_vh_threshold)
+        
+        return jsonify(result), 200
     
     except Exception as e:
         return jsonify({
